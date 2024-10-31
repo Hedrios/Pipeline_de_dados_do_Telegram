@@ -34,7 +34,9 @@ dados refinados.
 
 # Configuração do Ambiente
 
-## 1. Criar o Bot no Telegram: Inicie uma conversa com o BotFather no Telegram e crie um novo bot, salvando o token gerado.
+## 1. Criar o Bot no Telegram: 
+
+- Inicie uma conversa com o BotFather no Telegram e crie um novo bot, salvando o token gerado.
 
 ## 2. Configuração da AWS:
 
@@ -53,16 +55,46 @@ SQL dos dados processados.
 
 - AWS Lambda: Defina as variáveis AWS_S3_BUCKET (bucket de dados brutos) e TELEGRAM_CHAT_ID (ID do grupo Telegram) na função Lambda.
 
-## 4. Permissões IAM: Conceda permissões para que a função Lambda possa ler e gravar nos buckets S3.
+## 4. Permissões IAM: 
+
+- Conceda permissões para que a função Lambda possa ler e gravar nos buckets S3.
    
+## Estrutura do Código
 
 
+- lambda_ingestao.py: Função Lambda que recebe e armazena as mensagens do Telegram no S3.
+  
+- lambda_etl.py: Função Lambda que realiza o ETL, transformando e movendo os dados para a camada enriched no S3.
+
+- sql_queries.sql: Exemplo de consultas SQL para análise dos dados no AWS Athena.
+  
+- configuracoes_telegram.py: Configurações e métodos de interação com a API do Telegram, incluindo o webhook.
 
 
+## Exemplo de Uso
 
 
+1. Ingestão: Envie mensagens para o bot no Telegram e verifique se os dados são armazenados no bucket S3 na camada raw.
 
+2. Processamento ETL: Execute a função Lambda de ETL para transformar os dados brutos e movê-los para a camada enriched.
 
+3. Análise: Acesse o AWS Athena e use as consultas SQL para extrair insights dos dados processados.
 
+## Consultas de Exemplo no Athena
+
+- Quantidade de mensagens por dia:
+
+  SELECT context_date, COUNT(1) AS message_count FROM telegram GROUP BY context_date
+  ORDER BY context_date DESC;
+
+- Média de tamanho das mensagens por usuário por dia:
+  
+  SELECT user_id, user_first_name, context_date, AVG(LENGTH(text)) AS avg_message_length
+  FROM telegram GROUP BY user_id, user_first_name, context_date ORDER BY context_date
+  DESC;
+
+  ## Contribuição
+  
+Contribuições são bem-vindas! Sinta-se à vontade para abrir uma issue ou enviar um pull request.
 
 
